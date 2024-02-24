@@ -4,7 +4,7 @@ RUN apk add --no-cache protoc=24.4-r0
 
 WORKDIR /app
 
-COPY gateway/package*.json ./
+COPY ./package*.json ./
 
 RUN npm ci && npm cache clean --force
 
