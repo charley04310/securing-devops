@@ -86,7 +86,7 @@ In this threat model, the HTTP and MQTT clients interact with the system through
 - **Husky:** Husky is used to run pre-commit hooks that enforce code quality and best practices before a commit is made.
 - **Lint-staged:** Lint-staged is used to run ESLint on the staged files before a commit is made.
 
-### API Security
+## API Security
 
 #### DTO Validation
 
