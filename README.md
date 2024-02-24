@@ -1,5 +1,10 @@
 # Securing DevOps
 
+**Authors:** Charley GEOFFROY & Sylvain Pierrot
+**Année:** 2023/2024
+**Matière:** Securing DevOps
+**Supervised by:** M. Sureau Florian
+
 This repository contains the source code for the polytech project "Securing DevOps".
 
 - Deﬁne a subject, with existing code
@@ -14,9 +19,11 @@ It must include:
 - Reason why you did these steps
 - Your understanding of the results (security elements)
 
-## Threat Schema
+## Threat Schema : Where am I most vulnerable to attacks?
 
 <img src="./docs/assets/threat_model.png" alt="Threat model" width="100%"/>
+
+### Threat entities
 
 **Actor**
 
@@ -59,23 +66,28 @@ In this threat model, the HTTP and MQTT clients interact with the system through
 
 - Protocol-Based Attacks: An attacker exploits weaknesses in the protocols (HTTP, MQTT) handled by the reverse proxy.
 
-## MQTT credentials
+## Securing CI pipeline
 
-The MQTT credentials are stored in the `mosquitto/config/passwd` file.
-To generate a new password file, use the following command:
+### Continuous Integration (CI)
 
-```bash
-sudo mosquitto_passwd -c ./mosquitto/config/password.passwd app
-```
+- **Snyk:** Snyk is used to scan the application for vulnerabilities in the dependencies and Docker images. Snyk also pushing the results to the GitHub repository available in the Security tab.
 
-## Container security
+- ESLint: ESLint is used to enforce code quality and best practices in the application's source code.
 
-- version is specified for each IMAGE
-- container is running as non-root user
-- container is running with minimal privileges
-- container is running with minimal capabilities
-- container is running with minimal system calls
+### Dockerfile security
 
-## Data transfer object (DTO)
+- Container is running as non-root user
+- Container is running with minimal privileges
+- Container is running with ressource limits
+- Container is running with minimal system calls
 
-All data transfer objects (DTO) are defined in the `dto` package. They are used to transfer/control the data between the different layers of the application.
+### Github pre-commit hooks
+
+- **Husky:** Husky is used to run pre-commit hooks that enforce code quality and best practices before a commit is made.
+- **Lint-staged:** Lint-staged is used to run ESLint on the staged files before a commit is made.
+
+### API Security
+
+#### DTO Validation
+
+Data transfer object (DTO) validation is performed using class-validator and class-transformer. This ensures that the data received by the API is validated and transformed according to the defined rules.
