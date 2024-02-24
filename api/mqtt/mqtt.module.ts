@@ -8,7 +8,6 @@ import { databaseConfig } from 'config/database.config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRootAsync(databaseConfig),
     ClientsModule.register(mqttClientConfig),
   ],
   controllers: [MqttController],
