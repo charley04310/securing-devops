@@ -1,9 +1,9 @@
 # Securing DevOps
 
-**Authors:** Charley GEOFFROY & Sylvain Pierrot
-**Année:** 2023/2024
-**Matière:** Securing DevOps
-**Supervised by:** M. Sureau Florian
+- **Authors:** Charley GEOFFROY & Sylvain Pierrot
+- **Année:** 2023/2024
+- **Matière:** Securing DevOps
+- **Supervised by:** M. Sureau Florian
 
 This repository contains the source code for the polytech project "Securing DevOps".
 
@@ -19,11 +19,17 @@ It must include:
 - Reason why you did these steps
 - Your understanding of the results (security elements)
 
+## Table of contents
+
+- Developpers: project life cycle
+- External dependencies 
+
 ## Threat Schema : Where am I most vulnerable to attacks?
 
 <img src="./docs/assets/threat_model.png" alt="Threat model" width="100%"/>
 
 ### Threat entities
+
 
 **Actor**
 
@@ -44,6 +50,8 @@ In this threat model, the HTTP and MQTT clients interact with the system through
 
 ## Threats list
 
+Peut etre plus granulaire dans le details 
+
 **Threats to HTTP Client (HTTP Request and Response):**
 
 - Cross-Site Scripting (XSS): Malicious scripts are injected into the HTTP request, which is then executed by the HTTP client's browser.
@@ -56,7 +64,7 @@ In this threat model, the HTTP and MQTT clients interact with the system through
 
 - Denial of Service (DoS): An attacker overwhelms the MQTT broker with a high volume of TCP publications, causing it to become unresponsive.
 
-- Clandestine eavesdropping: An unauthorized entity intercepts and monitors MQTT messages, potentially exposing sensitive information.
+- Spoofing: An unauthorized entity intercepts and monitors MQTT messages, potentially exposing sensitive information.
 
 **Threats to Reverse Proxy (Exposed Service):**
 
@@ -67,6 +75,10 @@ In this threat model, the HTTP and MQTT clients interact with the system through
 - Protocol-Based Attacks: An attacker exploits weaknesses in the protocols (HTTP, MQTT) handled by the reverse proxy.
 
 ## Securing CI pipeline
+### Github pre-commit hooks
+
+- **Husky:** Husky is used to run pre-commit hooks that enforce code quality and best practices before a commit is made.
+- **Lint-staged:** Lint-staged is used to run ESLint on the staged files before a commit is made.
 
 ### Continuous Integration (CI)
 
@@ -76,18 +88,28 @@ In this threat model, the HTTP and MQTT clients interact with the system through
 
 ### Dockerfile security
 
-- Container is running as non-root user
-- Container is running with minimal privileges
-- Container is running with ressource limits
-- Container is running with minimal system calls
+- Container is running as non-root user (build)
+- Container is running with minimal privileges (build)
+- Container is running with ressource limits (runtime)
+- Container is running with minimal system calls (runtime)
 
-### Github pre-commit hooks
+### Kernel security
 
-- **Husky:** Husky is used to run pre-commit hooks that enforce code quality and best practices before a commit is made.
-- **Lint-staged:** Lint-staged is used to run ESLint on the staged files before a commit is made.
+- **Seccomp:** Seccomp is used to define the system calls that the container is allowed to make. This reduces the attack surface by preventing the container from making unnecessary system calls.
 
-## API Security
 
-#### DTO Validation
+
+## Development security
+
+### API security : DTO
 
 Data transfer object (DTO) validation is performed using class-validator and class-transformer. This ensures that the data received by the API is validated and transformed according to the defined rules.
+
+
+### Github security
+
+- 2FA developpers
+- Protect main branch
+- Require pull request reviews before merging
+- Require status checks to pass before merging
+
