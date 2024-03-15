@@ -1,0 +1,25 @@
+http:
+  routers:
+    router-nest:
+      rule: "Host(`127.0.0.1`) && PathPrefix(`/nest`)"
+      service: svc-nest
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: myresolver
+      middlewares:
+        - network-ratelimit
+
+  services:
+    svc-nest:
+      loadBalancer:
+        servers:
+          - url: "http://nest:3000"
+
+    network-ratelimit:
+      rateLimit:
+        average: 10
+        burst: 20
+        sourceCriterion:
+          ipStrategy:
+            depth: 2

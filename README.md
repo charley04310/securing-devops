@@ -5,6 +5,8 @@
 - **Matière:** Securing DevOps
 - **Supervised by:** M. Sureau Florian
 
+![securing-devops](./docs/assets/securing.png)
+
 This repository contains the source code for the polytech project "Securing DevOps".
 
 - Deﬁne a subject, with existing code
@@ -23,11 +25,6 @@ It must include:
 
 - Developpers: project life cycle
 - External dependencies
-
-## Requirements
-
-- [Docker](https://www.docker.com/)
-- [Pre-commit](https://pre-commit.com/)
 
 ## Threat Schema : Where am I most vulnerable to attacks?
 
@@ -48,13 +45,11 @@ It must include:
 
 - NestJS API: A Node.js-based API running on the local network, providing various functionalities.
 - MQTT Broker: Manages the MQTT communication within the local network, handling message publications and subscriptions.
-- PostgreSQL Database: A relational database used to store and retrieve data securely within the local network.
+- PostgreSQL Database: A relational database used to store and retrieve data Securingly within the local network.
 
 In this threat model, the HTTP and MQTT clients interact with the system through a reverse proxy, which serves as the entry point for all traffic.
 
-## Threats list
-
-Peut etre plus granulaire dans le details
+### Threats list
 
 **Threats to HTTP Client (HTTP Request and Response):**
 
@@ -78,27 +73,68 @@ Peut etre plus granulaire dans le details
 
 - Protocol-Based Attacks: An attacker exploits weaknesses in the protocols (HTTP, MQTT) handled by the reverse proxy.
 
-## Securing CI pipeline
+## Pipeline and Dockerfile security
+
+### Continuous Integration (CI)
+
+- **Snyk:** Snyk is used to scan the application for vulnerabilities in the dependencies and Docker images. Snyk also pushing the results to the GitHub repository available in the Security tab.
+
+- ESLint: ESLint is used to enforce code quality and best practices in the application's source code.
+
+### Dockerfile review
+
+Our [dockerfile](./api/Dockerfile) is designed to be as secure as possible. First of all, we use the `node:18-alpine` image as a base image, which is a minimal and secure version of the Node.js runtime. We also use multi-stage builds to reduce the size of the final image and minimize the attack surface. Moreover, we define a non-root user `node` and a group `nodegroup` to run the application, which helps to mitigate the risk of privilege escalation attacks.
+
+## Reverse Proxy security
+
+### Encryption and TLS/SSL
+
+In our specific setup, we will use Traefik to manage encryption and TLS/SSL configuration for our MQTT server. This approach ensures secure communication between MQTT clients and the broker by encrypting data in transit.
+
+By configuring [Traefik to manage encryption](./traefik/traefik.yaml) and TLS/SSL for our MQTT server, we ensure secure communication between MQTT clients and the broker, mitigating threats such as spoofing and unauthorized access. This personalized approach allows us to maintain a secure and reliable MQTT environment tailored to our specific needs.
+
+### Rate limiting
+
+Traefik provides a [rate limiting](./traefik/dynamic_conf.yaml) feature that can be used to protect against abuse and DoS attacks. Rate limiting can be applied to the entire reverse proxy or to specific services.
+
+## Securing MQTT broker
+
+### Access Control List (ACL) and TLS/SSL
+
+There is a risk of unauthorized access to the MQTT broker, which could lead to data breaches and other security issues. To mitigate this risk, [Access Control Lists](./mosquitto/config/acl.conf) are used to define the permissions (read/write) for different clients and topics. This helps to ensure that only authorized clients can publish and subscribe to specific topics.
+
+Additionally, using Securing communication channels and certificate-based authentication can further enhance the security of the MQTT broker. By [enabling TLS/SSL](./mosquitto/config/mosquitto.conf) encryption, the data transmitted between the clients and the broker is protected from eavesdropping and manipulation. Moreover, using certificates for client authentication ensures that only trusted clients can connect to the broker, adding an extra layer of security. This combination of access control lists, Securing communication, and certificate-based authentication helps to create a robust security posture for the MQTT broker, protecting it from unauthorized access and potential security threats.
+
+## Securing developpers environment
+
+### Github organization security
+
+In addition to the CI pipeline, it's important to think about the overall security of the GitHub organization. So, we've put the following security measures in place:
+
+- **Two-factor authentication (2FA):** 2FA is enabled for all developers, which adds an extra layer of security to their accounts.
+
+- **Branch protection rules** : Branch protection rules are used to prevent direct commits to the main branch and enforce code reviews before merging. This helps to ensure that all changes to the main branch are reviewed and approved by other team members.
+
+- **Require pull request reviews before merging:** This setting ensures that all pull requests are reviewed before they can be merged into the main branch. This helps to catch potential security vulnerabilities and other issues before they are introduced into the codebase.
+
+- **Require status checks to pass before merging:** This setting ensures that all required status checks (e.g., CI/CD pipelines, code quality checks) must pass before a pull request can be merged. This helps to ensure that the code being merged meets the necessary quality and security standards.
 
 ### Github pre-commit hooks
 
-La première étape de la pipeline CI est de s'assurer que le code source est propre et respecte les conventions de code. Lors de l'intégration d'un nouveau collaborateur, il est crucial de s'assurer que son environnement de développement soit configuré de manière identique à celui des autres membres de l'équipe. Ce processus ne peut pas être automatisé ou versionné, et il doit être réalisé indépendamment pour chaque développeur lors de l'unboarding.
-Pour cela, nous utilisons le tool [pre-commit](https://pre-commit.com/hooks.html) qui permet déclencher des hooks avant chaque commit. Dans notre cas, nous utilisons [les hooks suivants](./.pre-commit-config.yaml):
+Before even talking about CI, the first step is to ensure that the source code is clean and follows coding conventions. When onboarding a new team member, it's crucial to make sure their development environment is set up identically to other team members. This process cannot be automated or versioned, and must be done independently for each developer. To achieve this, we use the tool [pre-commit](https://pre-commit.com/hooks.html) which allows triggering hooks before each commit. In our case, we use [the following hooks](./.pre-commit-config.yaml):
 
 - no-commit-to-branch
 - check-merge-conflict
 - check-symlinks
 - detect-private-key
 
-Nous avons décidé d'utiliser ces hooks pour éviter les erreurs humaines et les fuites de données sensibles. Par exemple, le hook `detect-private-key` permet de détecter les clés privées qui pourraient être accidentellement commitées. De plus, le hook `no-commit-to-branch` permet de s'assurer que les commits ne sont pas effectués directement sur la branche principale, ce qui permet de forcer l'utilisation des pull requests. Enfin, le hook `check-merge-conflict` permet de détecter les conflits de merge avant de commiter.
+We chose these hooks to prevent human errors and sensitive data leaks. For example, the `detect-private-key` hook detects private keys that might be accidentally committed. Additionally, the `no-commit-to-branch` hook ensures commits aren't made directly to the main branch, forcing the use of pull requests. Lastly, the `check-merge-conflict` hook detects merge conflicts before committing.
 
-Un exemple de hook `no-commit-to-branch`:
+An example of the `no-commit-to-branch` hook:
 
-<img src="./docs/assets/pre-commit.png" alt="Pre-commit" width="100%"/>
+![Pre-commit](./docs/assets/pre-commit.png)
 
-Nous pourrions pousser la sécurité plus loin en intégrant des hooks personnalisés pour vérifier si un fichier d'envirronement est présent.
-
-Editer le fichier `.git/hooks/pre-commit` pour ajouter les hooks suivants:
+We could further enhance security by integrating custom hooks to check for the presence of environment files. Edit the `.git/hooks/pre-commit` file to add the following hooks:
 
 ```bash
 #!/bin/sh
@@ -115,32 +151,26 @@ fi
 exit 0
 ```
 
-### Continuous Integration (CI)
+## Securing NestJS API
 
-- **Snyk:** Snyk is used to scan the application for vulnerabilities in the dependencies and Docker images. Snyk also pushing the results to the GitHub repository available in the Security tab.
+### Using typeORM as ORM
 
-- ESLint: ESLint is used to enforce code quality and best practices in the application's source code.
+[TypeORM](https://typeorm.io/#/) uses prepared statements to execute SQL queries, which helps to prevent SQL injection attacks. Prepared statements separate the SQL query from the user input, which prevents the user input from being interpreted as part of the SQL query. TypeORM is also used to define the database schema and relationships, which helps to prevent misconfigurations and vulnerabilities.
 
-### Dockerfile security
+### Securing Data Transfer Objects (DTOs)
 
-- Container is running as non-root user (build)
-- Container is running with minimal privileges (build)
-- Container is running with ressource limits (runtime)
-- Container is running with minimal system calls (runtime)
+Data transfer object (DTO) validation is performed using `class-validator` and `class-transformer` from [nestJS](https://docs.nestjs.com/techniques/validation)
+framework. This ensures that the data received by the API is validated and transformed according to the defined rules. This helps to prevent malformed or malicious data from being processed by the API (Cross-Site Scripting).
 
-### Kernel security
+In the given example, the `HelloDto` class is utilized for validating "email" and "name" fields, which also implements the `HelloEntity` interface (representing the database entity). The `@IsString` and `@IsNotEmpty` decorators are employed to enforce validation rules. The `@IsEmpty` decorator is used to prevent the "id" field from being set by the client, as it is generated by the server.
 
-- **Seccomp:** Seccomp is used to define the system calls that the container is allowed to make. This reduces the attack surface by preventing the container from making unnecessary system calls.
+```typescript
+export class HelloDto implements HelloEntity {
+  @IsEmpty()
+  readonly id: UUID;
 
-## Development security
-
-### API security : DTO
-
-Data transfer object (DTO) validation is performed using class-validator and class-transformer. This ensures that the data received by the API is validated and transformed according to the defined rules.
-
-### Github security
-
-- 2FA developpers
-- Protect main branch
-- Require pull request reviews before merging
-- Require status checks to pass before merging
+  @IsString()
+  @IsNotEmpty()
+  readonly name: string;
+}
+```

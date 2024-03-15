@@ -1,0 +1,26 @@
+providers:
+  docker: {}
+  file:
+    filename: /etc/traefik/dynamic_conf.yaml
+    watch: true
+
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: ":443"
+  mqtt:
+    address: ":1883"
+
+certificatesResolvers:
+  myresolver:
+    acme:
+      email: charley.geoffroy@etu.umontpellier.fr
+      storage: /letsencrypt/acme.json
+      httpChallenge:
+        entryPoint: web
