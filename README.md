@@ -22,14 +22,18 @@ It must include:
 ## Table of contents
 
 - Developpers: project life cycle
-- External dependencies 
+- External dependencies
+
+## Requirements
+
+- [Docker](https://www.docker.com/)
+- [Pre-commit](https://pre-commit.com/)
 
 ## Threat Schema : Where am I most vulnerable to attacks?
 
 <img src="./docs/assets/threat_model.png" alt="Threat model" width="100%"/>
 
 ### Threat entities
-
 
 **Actor**
 
@@ -50,7 +54,7 @@ In this threat model, the HTTP and MQTT clients interact with the system through
 
 ## Threats list
 
-Peut etre plus granulaire dans le details 
+Peut etre plus granulaire dans le details
 
 **Threats to HTTP Client (HTTP Request and Response):**
 
@@ -75,10 +79,41 @@ Peut etre plus granulaire dans le details
 - Protocol-Based Attacks: An attacker exploits weaknesses in the protocols (HTTP, MQTT) handled by the reverse proxy.
 
 ## Securing CI pipeline
+
 ### Github pre-commit hooks
 
-- **Husky:** Husky is used to run pre-commit hooks that enforce code quality and best practices before a commit is made.
-- **Lint-staged:** Lint-staged is used to run ESLint on the staged files before a commit is made.
+La première étape de la pipeline CI est de s'assurer que le code source est propre et respecte les conventions de code. Lors de l'intégration d'un nouveau collaborateur, il est crucial de s'assurer que son environnement de développement soit configuré de manière identique à celui des autres membres de l'équipe. Ce processus ne peut pas être automatisé ou versionné, et il doit être réalisé indépendamment pour chaque développeur lors de l'unboarding.
+Pour cela, nous utilisons le tool [pre-commit](https://pre-commit.com/hooks.html) qui permet déclencher des hooks avant chaque commit. Dans notre cas, nous utilisons [les hooks suivants](./.pre-commit-config.yaml):
+
+- no-commit-to-branch
+- check-merge-conflict
+- check-symlinks
+- detect-private-key
+
+Nous avons décidé d'utiliser ces hooks pour éviter les erreurs humaines et les fuites de données sensibles. Par exemple, le hook `detect-private-key` permet de détecter les clés privées qui pourraient être accidentellement commitées. De plus, le hook `no-commit-to-branch` permet de s'assurer que les commits ne sont pas effectués directement sur la branche principale, ce qui permet de forcer l'utilisation des pull requests. Enfin, le hook `check-merge-conflict` permet de détecter les conflits de merge avant de commiter.
+
+Un exemple de hook `no-commit-to-branch`:
+
+<img src="./docs/assets/pre-commit.png" alt="Pre-commit" width="100%"/>
+
+Nous pourrions pousser la sécurité plus loin en intégrant des hooks personnalisés pour vérifier si un fichier d'envirronement est présent.
+
+Editer le fichier `.git/hooks/pre-commit` pour ajouter les hooks suivants:
+
+```bash
+#!/bin/sh
+# Find .env files in the staged changes
+ENV_FILES=$(git diff --cached --name-only --diff-filter=AM | grep '\.env$')
+
+if [ -n "$ENV_FILES" ]; then
+  echo "Error: Committing .env files is not allowed."
+  echo "The following .env files were found in your changes:"
+  echo "$ENV_FILES"
+  exit 1
+fi
+
+exit 0
+```
 
 ### Continuous Integration (CI)
 
@@ -97,14 +132,11 @@ Peut etre plus granulaire dans le details
 
 - **Seccomp:** Seccomp is used to define the system calls that the container is allowed to make. This reduces the attack surface by preventing the container from making unnecessary system calls.
 
-
-
 ## Development security
 
 ### API security : DTO
 
 Data transfer object (DTO) validation is performed using class-validator and class-transformer. This ensures that the data received by the API is validated and transformed according to the defined rules.
-
 
 ### Github security
 
@@ -112,4 +144,3 @@ Data transfer object (DTO) validation is performed using class-validator and cla
 - Protect main branch
 - Require pull request reviews before merging
 - Require status checks to pass before merging
-
