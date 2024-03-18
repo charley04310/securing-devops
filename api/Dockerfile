@@ -13,7 +13,6 @@ WORKDIR /app
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 
-RUN addgroup -S nodegroup && adduser -S node -G nodegroup
 USER node
 
 # Set environment variables
