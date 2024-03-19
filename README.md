@@ -123,6 +123,43 @@ exit 0
 
 ### Continuous Integration (CI)
 
+In this section, we will discuss the security choices of CI pipeline, the advantages of using Snyk and sonarqube, and how it addresses the core security concerns in our Continuous Integration (CI) workflows.
+
+### Security Choices
+
+Our CI workflows was thinked to ensure the quality and security of our codebase by performing : syntax checks, testing, and security analysis of both dependencies and Dockerfiles. By [integrating these security](./.github/workflows/) measures into our development process, we aim to create a reliable and robust application.
+
+#### Advantages of Snyk
+
+Snyk is a powerful tool for identifying and fixing vulnerabilities in open-source dependencies. It offers several benefits that make it an ideal choice for our project:
+
+1. Easy Integration: Snyk can be easily integrated into our CI/CD pipelines, allowing us to automatically test for vulnerabilities whenever changes are made to the codebase.
+2. Comprehensive Vulnerability Database: Snyk maintains an extensive database of known vulnerabilities, which is continuously updated. This ensures that our application is protected against the latest security threats.
+3. Language Support: Snyk supports a wide range of programming languages and package managers, making it a versatile tool for various projects.
+
+#### Security Concerns
+
+By incorporating Snyk into our CI workflows, we address several core security concerns:
+
+1. Dependency Vulnerabilities: Snyk scans our project's dependencies and identifies any known vulnerabilities. This helps us ensure that our application is built on a secure foundation.
+
+2. Proactive Security: By continuously monitoring and testing our codebase for vulnerabilities, we adopt a proactive approach to security. This allows us to identify and fix issues before they can be exploited.
+
+3. DevSecOps Integration: Integrating Snyk into our CI/CD pipelines promotes a DevSecOps culture, where security is an integral part of the development process. This results in a more secure and reliable application.
+
+### Advantages of SonarQube
+
+SonarQube is a popular open-source platform for continuous inspection of code quality and security. It performs static code analysis to detect bugs, code smells, and security vulnerabilities. By integrating SonarQube into our CI/CD pipeline, we can automatically analyze our codebase and identify potential issues.
+
+### Complementing Snyk with SonarQube
+
+While Snyk focuses on identifying and fixing vulnerabilities in open-source dependencies, SonarQube specializes in static code analysis. This makes the two tools complementary, as they address different aspects of application security.
+
+1. Dependency Vulnerabilities (Snyk): Snyk scans our project's dependencies and identifies known vulnerabilities, ensuring that our application is built on a secure foundation.
+2. Static Code Analysis (SonarQube): SonarQube analyzes our codebase for bugs, code smells, and security vulnerabilities, helping us maintain high code quality and adhere to best practices.
+
+In summary, the integration of both Snyk and SonarQube into our security workflow provides a comprehensive solution to address a wide range of security concerns. Snyk, with its easy integration, extensive vulnerability database, prioritized remediation, and broad language support, excels at identifying and fixing vulnerabilities in open-source dependencies. SonarQube, on the other hand, offers static code analysis, helping us maintain high code quality and adhere to best practices.
+
 
 ### Dockerfile review
 
