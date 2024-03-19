@@ -8,31 +8,29 @@ on:
       - "main"
 
 jobs:
-  security:
+  sonarqube:
+    name: SonarQube Trigger
     runs-on: ubuntu-latest
+    permissions: read-all
     steps:
     - name: Checking out
       uses: actions/checkout@master
       with:
         # Disabling shallow clone is recommended for improving relevancy of reporting
         fetch-depth: 0
-
     - name: SonarQube Scan
-      uses: kitabisa/sonarqube-action@v1.2.0
-      with:
-        host: ${{ secrets.SONARQUBE_HOST }}
-        login: ${{ secrets.SONARQUBE_TOKEN }}
-    # steps:
-    #   - uses: actions/checkout@v4
-
-    #   - name: Snyk
-    #     uses: snyk/actions/node@master
-    #     env:
-    #       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-    #     with:
-    #       args: --all-projects
+      uses: sonarsource/sonarqube-scan-action@master
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+  snyk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Snyk
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --all-projects
           
-  # sonarqube:
-  #   name: SonarQube Trigger
-  #   runs-on: ubuntu-latest
-
