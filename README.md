@@ -73,38 +73,6 @@ In this threat model, the HTTP and MQTT clients interact with the system through
 
 - Protocol-Based Attacks: An attacker exploits weaknesses in the protocols (HTTP, MQTT) handled by the reverse proxy.
 
-## Pipeline and Dockerfile security
-
-### Continuous Integration (CI)
-
-- **Snyk:** Snyk is used to scan the application for vulnerabilities in the dependencies and Docker images. Snyk also pushing the results to the GitHub repository available in the Security tab.
-
-- ESLint: ESLint is used to enforce code quality and best practices in the application's source code.
-
-### Dockerfile review
-
-Our [dockerfile](./api/Dockerfile) is designed to be as secure as possible. First of all, we use the `node:18-alpine` image as a base image, which is a minimal and secure version of the Node.js runtime. We also use multi-stage builds to reduce the size of the final image and minimize the attack surface. Moreover, we define a non-root user `node` and a group `nodegroup` to run the application, which helps to mitigate the risk of privilege escalation attacks.
-
-## Reverse Proxy security
-
-### Encryption and TLS/SSL
-
-In our specific setup, we will use Traefik to manage encryption and TLS/SSL configuration for our MQTT server. This approach ensures secure communication between MQTT clients and the broker by encrypting data in transit.
-
-By configuring [Traefik to manage encryption](./traefik/traefik.yaml) and TLS/SSL for our MQTT server, we ensure secure communication between MQTT clients and the broker, mitigating threats such as spoofing and unauthorized access. This personalized approach allows us to maintain a secure and reliable MQTT environment tailored to our specific needs.
-
-### Rate limiting
-
-Traefik provides a [rate limiting](./traefik/dynamic_conf.yaml) feature that can be used to protect against abuse and DoS attacks. Rate limiting can be applied to the entire reverse proxy or to specific services.
-
-## Securing MQTT broker
-
-### Access Control List (ACL) and TLS/SSL
-
-There is a risk of unauthorized access to the MQTT broker, which could lead to data breaches and other security issues. To mitigate this risk, [Access Control Lists](./mosquitto/config/acl.conf) are used to define the permissions (read/write) for different clients and topics. This helps to ensure that only authorized clients can publish and subscribe to specific topics.
-
-Additionally, using Securing communication channels and certificate-based authentication can further enhance the security of the MQTT broker. By [enabling TLS/SSL](./mosquitto/config/mosquitto.conf) encryption, the data transmitted between the clients and the broker is protected from eavesdropping and manipulation. Moreover, using certificates for client authentication ensures that only trusted clients can connect to the broker, adding an extra layer of security. This combination of access control lists, Securing communication, and certificate-based authentication helps to create a robust security posture for the MQTT broker, protecting it from unauthorized access and potential security threats.
-
 ## Securing developpers environment
 
 ### Github organization security
@@ -150,6 +118,60 @@ fi
 
 exit 0
 ```
+
+## Pipeline and Dockerfile security
+
+### Continuous Integration (CI)
+
+In this section, we will discuss the security choices, the advantages of using Snyk, and how it addresses the core security concerns in our Continuous Integration (CI) workflows.
+
+### Security Choices
+
+Our CI workflows was thinked to ensure the quality and security of our codebase by performing : syntax checks, testing, and security analysis of both dependencies and Dockerfiles. By [integrating these security](./.github/workflows/) measures into our development process, we aim to create a reliable and robust application.
+
+#### Advantages of Snyk
+
+Snyk is a powerful tool for identifying and fixing vulnerabilities in open-source dependencies. It offers several benefits that make it an ideal choice for our project:
+
+1. Easy Integration: Snyk can be easily integrated into our CI/CD pipelines, allowing us to automatically test for vulnerabilities whenever changes are made to the codebase.
+2. Comprehensive Vulnerability Database: Snyk maintains an extensive database of known vulnerabilities, which is continuously updated. This ensures that our application is protected against the latest security threats.
+3. Language Support: Snyk supports a wide range of programming languages and package managers, making it a versatile tool for various projects.
+
+####  Core Security Concerns
+
+By incorporating Snyk into our CI workflows, we address several core security concerns:
+
+1. Dependency Vulnerabilities: Snyk scans our project's dependencies and identifies any known vulnerabilities. This helps us ensure that our application is built on a secure foundation.
+
+2. Proactive Security: By continuously monitoring and testing our codebase for vulnerabilities, we adopt a proactive approach to security. This allows us to identify and fix issues before they can be exploited.
+
+3. DevSecOps Integration: Integrating Snyk into our CI/CD pipelines promotes a DevSecOps culture, where security is an integral part of the development process. This results in a more secure and reliable application.
+
+In summary, Snyk is an essential tool for addressing the core security concerns in our project. Its easy integration, comprehensive vulnerability database, prioritized remediation, and wide language support make it an ideal choice for enhancing the security of our application. By incorporating Snyk into our CI workflows, we ensure that our development process is secure, proactive, and aligned with the principles of DevSecOps.
+
+### Dockerfile review
+
+Our [dockerfile](./api/Dockerfile) is designed to be as secure as possible. First of all, we use the `node:18-alpine` image as a base image, which is a minimal and secure version of the Node.js runtime. We also use multi-stage builds to reduce the size of the final image and minimize the attack surface. Moreover, we define a non-root user `node` and a group `nodegroup` to run the application, which helps to mitigate the risk of privilege escalation attacks.
+
+## Reverse Proxy security
+
+### Encryption and TLS/SSL
+
+In our specific setup, we will use Traefik to manage encryption and TLS/SSL configuration for our MQTT server. This approach ensures secure communication between MQTT clients and the broker by encrypting data in transit.
+
+By configuring [Traefik to manage encryption](./traefik/traefik.yaml) and TLS/SSL for our MQTT server, we ensure secure communication between MQTT clients and the broker, mitigating threats such as spoofing and unauthorized access. This personalized approach allows us to maintain a secure and reliable MQTT environment tailored to our specific needs.
+
+### Rate limiting
+
+Traefik provides a [rate limiting](./traefik/dynamic_conf.yaml) feature that can be used to protect against abuse and DoS attacks. Rate limiting can be applied to the entire reverse proxy or to specific services.
+
+## Securing MQTT broker
+
+### Access Control List (ACL) and TLS/SSL
+
+There is a risk of unauthorized access to the MQTT broker, which could lead to data breaches and other security issues. To mitigate this risk, [Access Control Lists](./mosquitto/config/acl.conf) are used to define the permissions (read/write) for different clients and topics. This helps to ensure that only authorized clients can publish and subscribe to specific topics.
+
+Additionally, using Securing communication channels and certificate-based authentication can further enhance the security of the MQTT broker. By [enabling TLS/SSL](./mosquitto/config/mosquitto.conf) encryption, the data transmitted between the clients and the broker is protected from eavesdropping and manipulation. Moreover, using certificates for client authentication ensures that only trusted clients can connect to the broker, adding an extra layer of security. This combination of access control lists, Securing communication, and certificate-based authentication helps to create a robust security posture for the MQTT broker, protecting it from unauthorized access and potential security threats.
 
 ## Securing NestJS API
 
