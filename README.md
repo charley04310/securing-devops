@@ -23,8 +23,29 @@ It must include:
 
 ## Table of contents
 
-- Developpers: project life cycle
-- External dependencies
+  * [Threat Schema : Where am I most vulnerable to attacks?](#threat-schema---where-am-i-most-vulnerable-to-attacks-)
+    + [Threat entities](#threat-entities)
+    + [Threats list](#threats-list)
+  * [Securing developpers environment](#securing-developpers-environment)
+    + [Github organization security](#github-organization-security)
+    + [Github pre-commit hooks](#github-pre-commit-hooks)
+  * [Pipeline and Dockerfile security](#pipeline-and-dockerfile-security)
+    + [Continuous Integration (CI)](#continuous-integration--ci-)
+    + [Security Choices](#security-choices)
+      - [Advantages of Snyk](#advantages-of-snyk)
+      - [Security Concerns](#security-concerns)
+    + [Advantages of SonarQube](#advantages-of-sonarqube)
+    + [Complementing Snyk with SonarQube](#complementing-snyk-with-sonarqube)
+    + [Dockerfile review](#dockerfile-review)
+  * [Reverse Proxy security](#reverse-proxy-security)
+    + [Encryption and TLS/SSL](#encryption-and-tls-ssl)
+    + [Rate limiting](#rate-limiting)
+  * [Securing MQTT broker](#securing-mqtt-broker)
+    + [Access Control List (ACL) and TLS/SSL](#access-control-list--acl--and-tls-ssl)
+  * [Securing NestJS API](#securing-nestjs-api)
+    + [Using typeORM as ORM](#using-typeorm-as-orm)
+    + [Securing Data Transfer Objects (DTOs)](#securing-data-transfer-objects--dtos-)
+  * [Conclusion](#conclusion)
 
 ## Threat Schema : Where am I most vulnerable to attacks?
 
@@ -135,8 +156,14 @@ Our CI workflows was thinked to ensure the quality and security of our codebase 
 Snyk is a powerful tool for identifying and fixing vulnerabilities in open-source dependencies. It offers several benefits that make it an ideal choice for our project:
 
 1. Easy Integration: Snyk can be easily integrated into our CI/CD pipelines, allowing us to automatically test for vulnerabilities whenever changes are made to the codebase.
+
 2. Comprehensive Vulnerability Database: Snyk maintains an extensive database of known vulnerabilities, which is continuously updated. This ensures that our application is protected against the latest security threats.
+
 3. Language Support: Snyk supports a wide range of programming languages and package managers, making it a versatile tool for various projects.
+
+4. GitHub Integration: Snyk integrates seamlessly with GitHub, providing actionable security insights directly within the GitHub interface. This allows us to identify and fix vulnerabilities without leaving our development environment.
+
+
 
 #### Security Concerns
 
@@ -212,3 +239,17 @@ export class HelloDto implements HelloEntity {
   readonly name: string;
 }
 ```
+
+## Conclusion 
+
+In short, making DevOps safe is a complex task that needs careful thought and the use of best practices at every step of the development process. Our project has shown the importance of including safety measures from the start, such as securing the developer's environment and protecting services when they are deployed.
+
+We have demonstrated that keeping the developer's environment secure is vital. Tools like GitHub organization security and pre-commit hooks help prevent human errors and sensitive data leaks. Using tools like Snyk and SonarQube in our CI pipelines has helped us find and fix vulnerabilities in both our code and dependencies.
+
+Moreover, our approach to securing Dockerfiles, the reverse proxy, and the MQTT broker has shown the importance of encryption, access control, and rate limiting in protecting our services from potential threats. Lastly, our work on securing the NestJS API has highlighted the value of using tools like TypeORM and implementing strong data validation to prevent attacks like SQL injection and cross-site scripting.
+
+In conclusion, our project has provided a practical application of DevSecOps practices, demonstrating their effectiveness in enhancing the security and reliability of our applications. However, it's important to note that we have not covered every aspect of DevSecOps, such as an Incident Response Plan. This is a crucial element that should be taken into account to ensure a comprehensive security strategy.
+
+The topic of security is vast and there is always room for improvement and further exploration. In this report, we have tried to focus on what we believe to be essential and what we have discussed in our course. 
+
+However, we acknowledge that there are many more aspects to consider in the realm of DevSecOps. As we continue to learn and grow, we aim to delve deeper into these topics, constantly improving our security measures and contributing to the wider conversation on securing DevOps.
